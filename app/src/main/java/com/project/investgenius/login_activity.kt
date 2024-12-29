@@ -53,7 +53,6 @@ class login_activity : AppCompatActivity() {
             val intent = Intent(this,create_account::class.java)
             startActivity(intent)
         }
-        //hiii
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
