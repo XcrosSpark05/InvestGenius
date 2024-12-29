@@ -28,7 +28,7 @@ class login_activity : AppCompatActivity() {
 
         binding.button2.setOnClickListener{
             val email = binding.editTextTextEmailAddress.text.toString()
-            val password = binding.editTextTextPassword.text.toString()
+            val password = binding.passtext.text.toString()
             if (email.isEmpty()||password.isEmpty()){
                 Toast.makeText(this, "Please Fill Credentials", Toast.LENGTH_SHORT).show()
             }
