@@ -41,8 +41,7 @@ class signup : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener { task->
                     if (task.isSuccessful){
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this,login_activity::class.java)
+                        val intent = Intent(this,otp::class.java)
                         startActivity(intent)
                         finish()
                     }else{
