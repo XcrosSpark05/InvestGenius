@@ -17,7 +17,9 @@
             android:exported="false" />
         <activity
             android:name=".otp"
-            android:exported="false" />
+            android:exported="false">
+
+        </activity>
         <activity
             android:name=".signup"
             android:exported="false" />
