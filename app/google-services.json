@@ -12,7 +12,20 @@
           "package_name": "com.project.investgenius"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "804379570866-8ejh5oa3mjf68umsmegbtlsck621ji02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.investgenius",
+            "certificate_hash": "27bd63549219170a43cf5d0413b2b99fb26d995e"
+          }
+        },
+        {
+          "client_id": "804379570866-4ikogqign5ft41fplpb14vhv69evvurg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDiSkbjjZcyH0IEt8jei3cpQYgQRabIoCg"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804379570866-4ikogqign5ft41fplpb14vhv69evvurg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
