@@ -26,12 +26,12 @@ class signup : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
     binding.button6.setOnClickListener{
-        val email = binding.editTextTextEmailAddress2.text.toString()
-        val fullName = binding.editTextText.text.toString()
-        val lastName = binding.editTextText2.text.toString()
-        val phoneNumber = binding.editTextPhone.text.toString()
-        val password = binding.editTextTextPassword2.text.toString()
-        val confrimPassword = binding.editTextTextPassword3.text.toString()
+        val email = binding.emailregnametext.text.toString()
+        val fullName = binding.firstnametext.text.toString()
+        val lastName = binding.lastnametext.text.toString()
+        val phoneNumber = binding.phoneregnametext.text.toString()
+        val password = binding.passregnametext.text.toString()
+        val confrimPassword = binding.confrimpasswordregnametext.text.toString()
 
         if (email.isEmpty()||fullName.isEmpty()||lastName.isEmpty()||phoneNumber.isEmpty()||password.isEmpty()||confrimPassword.isEmpty()){
             Toast.makeText(this, "Please Fill all-Details", Toast.LENGTH_SHORT).show()
