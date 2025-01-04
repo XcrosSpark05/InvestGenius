@@ -87,7 +87,9 @@
                 android:id="@+id/emailregtextInputLayout"
                 android:layout_width="328dp"
                 android:layout_height="match_parent"
-
+                app:placeholderText="abc@gmail.com"
+                app:endIconMode="clear_text"
+                app:endIconTint="@color/black"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/input"
                 android:elevation="10dp"
@@ -120,6 +122,7 @@
                 android:id="@+id/phonenumbertextInputLayout"
                 android:layout_width="328dp"
                 android:layout_height="match_parent"
+                app:prefixText="+91"
 
                 android:layout_marginTop="24dp"
                 android:background="@drawable/input"
@@ -143,8 +146,9 @@
                     android:layout_height="match_parent"
                     android:drawableStart="@drawable/india"
                     android:drawablePadding="15dp"
+                    android:maxLength="10"
                     android:hint="Phone Number"
-                    android:inputType="textEmailAddress"
+                    android:inputType="phone"
                     android:paddingTop="10dp"
                     android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -155,7 +159,8 @@
                 android:id="@+id/passwordtextInputLayout"
                 android:layout_width="328dp"
                 android:layout_height="match_parent"
-                app:passwordToggleEnabled="false"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/black"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/input"
                 android:elevation="10dp"
@@ -179,7 +184,7 @@
                     android:drawableStart="@drawable/lock"
                     android:drawablePadding="15dp"
                     android:hint="Enter Password"
-                    android:inputType="textEmailAddress"
+                    android:inputType="textPassword"
                     android:paddingTop="10dp"
                     android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -188,7 +193,8 @@
                 android:id="@+id/confrimpasstextInputLayout"
                 android:layout_width="328dp"
                 android:layout_height="match_parent"
-                app:passwordToggleEnabled="false"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/black"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/input"
                 android:elevation="10dp"
@@ -212,7 +218,7 @@
                     android:drawableStart="@drawable/lock"
                     android:drawablePadding="15dp"
                     android:hint="Confirm Password"
-                    android:inputType="textEmailAddress"
+                    android:inputType="textPassword"
                     android:paddingTop="10dp"
                     android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -248,24 +254,37 @@
                 android:layout_width="277dp"
                 android:layout_height="49dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginBottom="200dp"
                 android:background="@drawable/button"
                 android:fontFamily="@font/istok_web_bold"
                 android:text="Sign up"
                 android:textAllCaps="false"
                 android:textColor="#000000"
                 android:textSize="25sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/checkBox"
                 app:layout_constraintStart_toStartOf="@+id/checkBox"
                 app:layout_constraintTop_toBottomOf="@+id/checkBox" />
 
             <ImageView
                 android:id="@+id/imageView10"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
                 app:layout_constraintEnd_toEndOf="@+id/textView14"
                 app:layout_constraintStart_toStartOf="@+id/textView14"
                 app:layout_constraintTop_toBottomOf="@+id/textView14"
                 app:srcCompat="@drawable/signup" />
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Develped By \n PJ"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button6" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
