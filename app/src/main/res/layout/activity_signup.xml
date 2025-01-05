@@ -89,9 +89,6 @@
                 android:id="@+id/emailregtextInputLayout"
                 android:layout_width="328dp"
                 android:layout_height="match_parent"
-                app:placeholderText="abc@gmail.com"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/black"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/input"
                 android:elevation="10dp"
@@ -103,10 +100,13 @@
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="2dp"
+                app:endIconMode="clear_text"
+                app:endIconTint="@color/black"
                 app:hintTextColor="@color/black"
                 app:layout_constraintEnd_toEndOf="@+id/lastnametextInputLayout"
                 app:layout_constraintStart_toStartOf="@+id/lastnametextInputLayout"
-                app:layout_constraintTop_toBottomOf="@+id/lastnametextInputLayout">
+                app:layout_constraintTop_toBottomOf="@+id/lastnametextInputLayout"
+                app:placeholderText="abc@gmail.com">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailregnametext"

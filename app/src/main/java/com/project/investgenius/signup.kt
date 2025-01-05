@@ -2,11 +2,16 @@ package com.project.investgenius
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.project.investgenius.databinding.ActivityCreateAccountBinding
@@ -24,6 +29,8 @@ class signup : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
+
+
 
     binding.button6.setOnClickListener{
         val email = binding.emailregnametext.text.toString()
@@ -49,10 +56,7 @@ class signup : AppCompatActivity() {
                     }
                 }
         }
-
     }
-
-        
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -60,6 +64,8 @@ class signup : AppCompatActivity() {
             insets
         }
     }
+
+
 
 
 }
