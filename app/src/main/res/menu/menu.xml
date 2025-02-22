@@ -2,13 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="News"
+        android:id="@+id/newsFragment"
         android:icon="@drawable/baseline_newspaper_24"/>
     <item android:title="AI Pre"
+        android:id="@+id/AIFragment"
         android:icon="@drawable/message_bot"/>
     <item android:title="Home"
+        android:id="@+id/homeFragment"
         android:icon="@drawable/baseline_home_24"/>
     <item android:title="WatchList"
+        android:id="@+id/watchlistFragment"
         android:icon="@drawable/baseline_view_list_24"/>
     <item android:title="Profile"
+        android:id="@+id/profileFragment"
         android:icon="@drawable/baseline_account_circle_24"/>
 </menu>
