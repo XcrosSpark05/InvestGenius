@@ -1,17 +1,16 @@
 package com.project.investgenius.Fragment
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.project.investgenius.R
 import com.project.investgenius.adaptor.IndicesAdaptor
+import com.project.investgenius.adaptor.TopGainerAdaptor
 import com.project.investgenius.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -36,17 +35,24 @@ class HomeFragment : Fragment() {
         imageList.add(SlideModel(R.drawable.banner4, ScaleTypes.FIT))
 
         val imageSlider = binding.imageSlider
-        imageSlider.setImageList(imageList)
         imageSlider.setImageList(imageList, ScaleTypes.FIT)
 
+        // Top Gainers
+        val ComName = listOf("JSW Energy", "Hindalco", "Varun Beverages", "Tata Steel", "Macrotech Devis", "SBI Life Insurance")
+        val ComSym = listOf("JSWENERGY", "HINDALCO", "VBL", "TATASTEEL", "LODHA", "SBILIFE")
+        val Value = listOf("₹496.60", "₹653.55", "₹477.65", "₹140.76", "₹1,215.55", "₹1,495.40")
+        val topImages = listOf(R.drawable.stock1, R.drawable.stock2, R.drawable.stock3, R.drawable.stock4, R.drawable.stock5, R.drawable.stock6)
+
+        val gainerAdaptor = TopGainerAdaptor(ComSym, ComName, topImages, Value) // ✅ Fixed order
+        binding.topGainersRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.topGainersRecyclerView.adapter = gainerAdaptor // ✅ Fixed RecyclerView binding
+
+        // Indices
         val indicesName = listOf("NIFTY 50", "SENSEX", "BANK NIFTY")
         val indicesValue = listOf(22795.90f, 75311.06f, 48981.20f)
-
-        val adaptor = IndicesAdaptor(indicesName, indicesValue)
-
+        val indicesAdaptor = IndicesAdaptor(indicesName, indicesValue)
         binding.indicesRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-        binding.indicesRecyclerView.adapter = adaptor
+        binding.indicesRecyclerView.adapter = indicesAdaptor
     }
 
     override fun onDestroyView() {
@@ -54,3 +60,4 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
+
