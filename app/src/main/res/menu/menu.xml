@@ -10,9 +10,9 @@
     <item android:title="Home"
         android:id="@+id/homeFragment"
         android:icon="@drawable/baseline_home_24"/>
-    <item android:title="WatchList"
+    <item android:title="Search"
         android:id="@+id/watchlistFragment"
-        android:icon="@drawable/baseline_view_list_24"/>
+        android:icon="@drawable/baseline_search_24"/>
     <item android:title="Profile"
         android:id="@+id/profileFragment"
         android:icon="@drawable/baseline_account_circle_24"/>

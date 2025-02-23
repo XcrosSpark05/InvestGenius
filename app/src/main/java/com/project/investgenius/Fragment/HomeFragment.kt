@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.project.investgenius.R
+import com.project.investgenius.TopGainerBottomSheetFragment
 import com.project.investgenius.adaptor.IndicesAdaptor
 import com.project.investgenius.adaptor.TopGainerAdaptor
 import com.project.investgenius.databinding.FragmentHomeBinding
@@ -23,6 +24,12 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding.textView31.setOnClickListener{
+            val bottomSheetDailog = TopGainerBottomSheetFragment()
+            bottomSheetDailog.show(parentFragmentManager,"Test")
+        }
+
+
         return binding.root
     }
 
@@ -38,10 +45,10 @@ class HomeFragment : Fragment() {
         imageSlider.setImageList(imageList, ScaleTypes.FIT)
 
         // Top Gainers
-        val ComName = listOf("JSW Energy", "Hindalco", "Varun Beverages", "Tata Steel", "Macrotech Devis", "SBI Life Insurance")
-        val ComSym = listOf("JSWENERGY", "HINDALCO", "VBL", "TATASTEEL", "LODHA", "SBILIFE")
-        val Value = listOf("₹496.60", "₹653.55", "₹477.65", "₹140.76", "₹1,215.55", "₹1,495.40")
-        val topImages = listOf(R.drawable.stock1, R.drawable.stock2, R.drawable.stock3, R.drawable.stock4, R.drawable.stock5, R.drawable.stock6)
+        val ComName = listOf("JSW Energy", "Hindalco", "Varun Beverages", "Tata Steel")
+        val ComSym = listOf("JSWENERGY", "HINDALCO", "VBL", "TATASTEEL")
+        val Value = listOf("₹496.60", "₹653.55", "₹477.65", "₹140.76")
+        val topImages = listOf(R.drawable.stock1, R.drawable.stock2, R.drawable.stock3, R.drawable.stock4)
 
         val gainerAdaptor = TopGainerAdaptor(ComSym, ComName, topImages, Value) // ✅ Fixed order
         binding.topGainersRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
