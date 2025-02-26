@@ -24,11 +24,10 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        binding.textView31.setOnClickListener{
+        binding.textView31.setOnClickListener {
             val bottomSheetDailog = TopGainerBottomSheetFragment()
-            bottomSheetDailog.show(parentFragmentManager,"Test")
+            bottomSheetDailog.show(parentFragmentManager, "Test")
         }
-
 
         return binding.root
     }
@@ -50,15 +49,18 @@ class HomeFragment : Fragment() {
         val Value = listOf("₹496.60", "₹653.55", "₹477.65", "₹140.76")
         val topImages = listOf(R.drawable.stock1, R.drawable.stock2, R.drawable.stock3, R.drawable.stock4)
 
-        val gainerAdaptor = TopGainerAdaptor(ComSym, ComName, topImages, Value) // ✅ Fixed order
-        binding.topGainersRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.topGainersRecyclerView.adapter = gainerAdaptor // ✅ Fixed RecyclerView binding
+        // ✅ Fix: Ensure TopGainerAdaptor expects List<Int> for images and List<String> for values
+        val gainerAdaptor = TopGainerAdaptor(ComSym, ComName, Value, topImages)
+        binding.topGainersRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.topGainersRecyclerView.adapter = gainerAdaptor
 
         // Indices
         val indicesName = listOf("NIFTY 50", "SENSEX", "BANK NIFTY")
         val indicesValue = listOf(22795.90f, 75311.06f, 48981.20f)
         val indicesAdaptor = IndicesAdaptor(indicesName, indicesValue)
-        binding.indicesRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.indicesRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.indicesRecyclerView.adapter = indicesAdaptor
     }
 
@@ -67,4 +69,3 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
-

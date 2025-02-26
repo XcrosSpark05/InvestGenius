@@ -8,8 +8,8 @@ import com.project.investgenius.databinding.TopgainerslistBinding
 class TopGainerAdaptor(
     private val companySymbol: List<String>,
     private val companyName: List<String>,
-    private val image: List<Int>,
-    private val value: List<String>
+    private val value: List<String>, // Changed from Int to String
+    private val image: List<Int> // Changed from String to Int
 ) : RecyclerView.Adapter<TopGainerAdaptor.TopGainerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopGainerViewHolder {
@@ -23,7 +23,7 @@ class TopGainerAdaptor(
         val comName = companyName[position]
         val valPrice = value[position]
         val images = image[position]
-        holder.bind(comSym, valPrice, images, comName) // ✅ Removed .toString()
+        holder.bind(comSym, valPrice, images, comName)
     }
 
     override fun getItemCount(): Int {
@@ -38,7 +38,7 @@ class TopGainerAdaptor(
             binding.textView25.text = comSym
             binding.textView26.text = comName
             binding.textView27.text = valPrice
-            imagesView.setImageResource(images) // Ensure your layout has an ImageView with the correct ID
+            imagesView.setImageResource(images)
         }
     }
 }
