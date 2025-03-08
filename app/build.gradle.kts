@@ -68,5 +68,7 @@ dependencies {
     kapt ("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.squareup.picasso:picasso:2.8")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
 
 }

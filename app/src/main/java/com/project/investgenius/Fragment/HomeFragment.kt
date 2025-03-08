@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
@@ -16,20 +17,18 @@ import com.project.investgenius.TopGainerBottomSheetFragment
 import com.project.investgenius.adaptor.IndicesAdaptor
 import com.project.investgenius.adaptor.TopGainerAdaptor
 import com.project.investgenius.databinding.FragmentHomeBinding
-import com.project.investgenius.API.ApiService
-import com.project.investgenius.API.Gainer
-import okhttp3.OkHttpClient
-import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
+import com.project.investgenius.viewmodel.HomeViewModel
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var gainerAdaptor: TopGainerAdaptor
-    private var retryCount = 0
-    private val maxRetries = 3
+    // Variable to hold the full list of gainers from the API
+    private var fullGainers: List<com.project.investgenius.API.Gainer> = emptyList()
+
+    // Use the ViewModel by delegation
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +36,8 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.textView31.setOnClickListener {
-            // Assume gainerAdaptor holds the fetched list of gainers
-            val currentGainers = ArrayList(gainerAdaptor.getData()) // Implement getData() in your adapter
+            // Pass full list of gainers to BottomSheetFragment
+            val currentGainers = ArrayList(fullGainers)
             val bottomSheetDialog = TopGainerBottomSheetFragment.newInstance(currentGainers)
             bottomSheetDialog.show(parentFragmentManager, "Test")
         }
@@ -62,53 +61,22 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.topGainersRecyclerView.adapter = gainerAdaptor
 
-        fetchTopGainers()
+        // Observe the LiveData in the ViewModel
+        homeViewModel.topGainers.observe(viewLifecycleOwner) { gainers ->
+            if (gainers != null) {
+                // Save the full list for the bottom sheet
+                fullGainers = gainers
+                // Display only the top 4 on the home screen
+                val top4 = gainers.take(4)
+                gainerAdaptor.updateData(top4)
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+
+        // Trigger fetching only if data hasn't been loaded yet
+        homeViewModel.fetchTopGainers()
         setupIndices()
     }
-
-    private fun fetchTopGainers() {
-        // Show the progress bar before making the network call
-        binding.progressBar.visibility = View.VISIBLE
-
-        val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://apitesting-production-07ba.up.railway.app/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
-            .build()
-
-        val apiService = retrofit.create(ApiService::class.java)
-        apiService.getTopGainers().enqueue(object : Callback<Map<String, List<Gainer>>> {
-            override fun onResponse(
-                call: Call<Map<String, List<Gainer>>>,
-                response: Response<Map<String, List<Gainer>>>
-            ) {
-                // Hide progress bar once data is loaded
-                binding.progressBar.visibility = View.GONE
-
-                if (response.isSuccessful) {
-                    response.body()?.let { responseData ->
-                        val gainersList = responseData["top_gainers"] ?: emptyList()
-                        gainerAdaptor.updateData(gainersList)
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Failed to load data", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<Map<String, List<Gainer>>>, t: Throwable) {
-                // Hide progress bar on error
-                binding.progressBar.visibility = View.GONE
-                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
 
     private fun setupIndices() {
         val indicesName = listOf("NIFTY 50", "SENSEX", "BANK NIFTY")
