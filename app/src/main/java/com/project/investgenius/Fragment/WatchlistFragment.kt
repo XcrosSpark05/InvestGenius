@@ -1,105 +1,143 @@
 package com.project.investgenius.Fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.project.investgenius.API.ApiService
+import com.project.investgenius.API.Gainer
 import com.project.investgenius.R
 import com.project.investgenius.adaptor.TopGainerAdaptor
 import com.project.investgenius.databinding.FragmentWatchlistBinding
-
+import com.project.investgenius.SearchStocksViewModel
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class WatchlistFragment : Fragment() {
-    private lateinit var binding: FragmentWatchlistBinding
-    private lateinit var adpator: TopGainerAdaptor
-    private val Originalstocknames = listOf("JSW Energy", "Hindalco", "Varun Beverages", "Tata Steel", "Macrotech Devis", "SBI Life Insurance", "Hindalco", "Varun Beverages", "Tata Steel", "Macrotech Devis", "SBI Life Insurance")
-    private val OriginalValue3 = listOf("₹496.60", "₹653.55", "₹477.65", "₹140.76", "₹1,215.55", "₹1,495.40", "₹653.55", "₹477.65", "₹140.76", "₹1,215.55", "₹1,495.40")
-    private val OriginalComSym3 = listOf("JSWENERGY", "HINDALCO", "VBL", "TATASTEEL", "LODHA", "SBILIFE", "HINDALCO", "VBL", "TATASTEEL", "LODHA", "SBILIFE")
-    private val originaltopImages3 = listOf(R.drawable.stock1, R.drawable.stock2, R.drawable.stock3, R.drawable.stock4, R.drawable.stock5, R.drawable.stock6, R.drawable.stock2, R.drawable.stock3, R.drawable.stock4, R.drawable.stock5, R.drawable.stock6)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var _binding: FragmentWatchlistBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var adapter: TopGainerAdaptor
 
-    }
+    // Store the complete list fetched from the API
+    private var fullStocksList: List<Gainer> = emptyList()
 
-
-    private val filteredstocklistname = mutableListOf<String>()
-    private val filteredstocklistSym = mutableListOf<String>()
-    private val filteredstocklistPrice = mutableListOf<String>()
-    private val filteredstocklistImag = mutableListOf<Int>()
-
+    // Obtain the ViewModel
+    private val viewModel: SearchStocksViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentWatchlistBinding.inflate(inflater,container,false)
-       // adpator = TopGainerAdaptor(filteredstocklistname,filteredstocklistSym,filteredstocklistPrice,filteredstocklistImag)
-        binding.BottomSheetTopGainer.layoutManager = LinearLayoutManager(requireContext())
-        binding.BottomSheetTopGainer.adapter = adpator
-
-
-        //setup searchview
-        setupSearchView()
-        //Show all stocks
-        showAllStocks()
-
+    ): View {
+        _binding = FragmentWatchlistBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    private fun showAllStocks() {
-        filteredstocklistname.clear()
-        filteredstocklistSym.clear()
-        filteredstocklistPrice.clear()
-        filteredstocklistImag.clear()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        filteredstocklistname.addAll(Originalstocknames)
-        filteredstocklistSym.addAll(OriginalComSym3)
-        filteredstocklistPrice.addAll(OriginalValue3)
-        filteredstocklistImag.addAll(originaltopImages3)
+        // Initialize the adapter with an empty list
+        adapter = TopGainerAdaptor(emptyList())
+        binding.BottomSheetTopGainer.layoutManager = LinearLayoutManager(requireContext())
+        binding.BottomSheetTopGainer.adapter = adapter
 
-        adpator.notifyDataSetChanged()
+        // Set up the SearchView listener
+        setupSearchView()
+
+        // Observe the cached data in the ViewModel
+        viewModel.fullStocksList.observe(viewLifecycleOwner) { stocks ->
+            if (stocks != null) {
+                fullStocksList = stocks
+                adapter.updateData(fullStocksList)
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+
+        // Fetch all stocks only if data is not already loaded
+        if (viewModel.fullStocksList.value == null) {
+            fetchAllStocks()
+        }
+    }
+
+    private fun fetchAllStocks() {
+        binding.progressBar.visibility = View.VISIBLE
+
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://apitesting-production-07ba.up.railway.app/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+
+        val apiService = retrofit.create(ApiService::class.java)
+        apiService.getAllStocks().enqueue(object : Callback<Map<String, List<Gainer>>> {
+            override fun onResponse(
+                call: Call<Map<String, List<Gainer>>>,
+                response: Response<Map<String, List<Gainer>>>
+            ) {
+                binding.progressBar.visibility = View.GONE
+                if (response.isSuccessful) {
+                    response.body()?.let { responseData ->
+                        fullStocksList = responseData["all_stocks"] ?: emptyList()
+                        // Cache the full list in the ViewModel
+                        viewModel.setStocks(fullStocksList)
+                        adapter.updateData(fullStocksList)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Failed to load stocks", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Map<String, List<Gainer>>>, t: Throwable) {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun setupSearchView() {
-        binding.searchView.setOnQueryTextListener(object:SearchView.OnQueryTextListener,
-            android.widget.SearchView.OnQueryTextListener {
+        binding.searchView.setOnQueryTextListener(object : android.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                filterstocklist(query)
+                filterStocks(query)
                 return true
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                filterstocklist(newText)
+                filterStocks(newText)
                 return true
             }
         })
     }
 
-    private fun filterstocklist(query: String) {
-        filteredstocklistname.clear()
-        filteredstocklistSym.clear()
-        filteredstocklistPrice.clear()
-        filteredstocklistImag.clear()
-
-
-        Originalstocknames.forEachIndexed{index, stockname ->
-            if (stockname.contains(query,ignoreCase = true)){
-                filteredstocklistname.add(stockname)
-                filteredstocklistSym.add(OriginalComSym3[index])
-                filteredstocklistPrice.add(OriginalValue3[index])
-                filteredstocklistImag.add(originaltopImages3[index])
+    private fun filterStocks(query: String?) {
+        val filteredList = if (query.isNullOrEmpty()) {
+            fullStocksList
+        } else {
+            fullStocksList.filter { stock ->
+                stock.symbol.contains(query, ignoreCase = true) ||
+                        stock.company_name.contains(query, ignoreCase = true)
             }
         }
-        adpator.notifyDataSetChanged()
-
+        adapter.updateData(filteredList)
     }
 
-    companion object {
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

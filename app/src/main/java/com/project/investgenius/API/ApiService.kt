@@ -6,4 +6,8 @@ import retrofit2.http.GET
 interface ApiService {
     @GET("top-gainers") // Use the correct endpoint
     fun getTopGainers(): Call<Map<String, List<Gainer>>>
+
+    @GET("all-stocks")
+    fun getAllStocks(): Call<Map<String, List<Gainer>>>
 }
+

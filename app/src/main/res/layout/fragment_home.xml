@@ -21,7 +21,7 @@
                 android:id="@+id/topGainersRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView30" />
@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:fontFamily="@font/inter_bold"
+                android:fontFamily="@font/istok_web_bold"
                 android:text="Top Gainers"
                 android:textColor="#000000"
                 android:textSize="20sp"
