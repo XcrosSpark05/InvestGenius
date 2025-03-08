@@ -1,15 +1,15 @@
 package com.project.investgenius.adaptor
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.project.investgenius.databinding.TopgainerslistBinding
+import com.project.investgenius.API.Gainer
+import com.bumptech.glide.Glide
 
 class TopGainerAdaptor(
-    private val companySymbol: List<String>,
-    private val companyName: List<String>,
-    private val value: List<String>, // Changed from Int to String
-    private val image: List<Int> // Changed from String to Int
+    private var topGainers: List<Gainer>
 ) : RecyclerView.Adapter<TopGainerAdaptor.TopGainerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopGainerViewHolder {
@@ -19,26 +19,45 @@ class TopGainerAdaptor(
     }
 
     override fun onBindViewHolder(holder: TopGainerViewHolder, position: Int) {
-        val comSym = companySymbol[position]
-        val comName = companyName[position]
-        val valPrice = value[position]
-        val images = image[position]
-        holder.bind(comSym, valPrice, images, comName)
+        val gainer = topGainers[position]
+        holder.bind(gainer)
     }
 
     override fun getItemCount(): Int {
-        return companySymbol.size
+        return topGainers.size
+    }
+
+    fun updateData(newGainers: List<Gainer>) {
+        topGainers = newGainers
+        notifyDataSetChanged()
+    }
+
+    // Corrected getter to return topGainers
+    fun getData(): List<Gainer> {
+        return topGainers
     }
 
     class TopGainerViewHolder(private val binding: TopgainerslistBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private val imagesView = binding.imageView11
+        fun bind(gainer: Gainer) {
+            binding.textView25.text = gainer.symbol
+            binding.textView26.text = gainer.company_name
+            binding.textView27.text = gainer.price.toString()
 
-        fun bind(comSym: String, valPrice: String, images: Int, comName: String) {
-            binding.textView25.text = comSym
-            binding.textView26.text = comName
-            binding.textView27.text = valPrice
-            imagesView.setImageResource(images)
+            // Optionally, load an image if you have one (using Glide, for example)
+            // Glide.with(binding.imageView11.context).load(gainer.imageUrl).into(binding.imageView11)
+
+            // Set the price change data into textView29 and textView32
+            val change = gainer.price_change
+            binding.textView29.text = "$change%" // Display the price change with a percentage sign
+
+            if (change >= 0) {
+                binding.textView32.text = "^" // Up arrow for positive change
+                binding.textView29.setTextColor(Color.parseColor("#4CAF50"))
+                binding.textView32.setTextColor(Color.parseColor("#4CAF50"))
+            } else {
+                binding.textView32.text = "v" // Down arrow for negative change
+            }
         }
     }
 }

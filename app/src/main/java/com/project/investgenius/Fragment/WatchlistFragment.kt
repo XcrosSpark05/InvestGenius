@@ -38,7 +38,7 @@ class WatchlistFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentWatchlistBinding.inflate(inflater,container,false)
-        adpator = TopGainerAdaptor(filteredstocklistname,filteredstocklistSym,filteredstocklistPrice,filteredstocklistImag)
+       // adpator = TopGainerAdaptor(filteredstocklistname,filteredstocklistSym,filteredstocklistPrice,filteredstocklistImag)
         binding.BottomSheetTopGainer.layoutManager = LinearLayoutManager(requireContext())
         binding.BottomSheetTopGainer.adapter = adpator
 
