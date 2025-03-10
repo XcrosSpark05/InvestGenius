@@ -18,6 +18,8 @@ import com.project.investgenius.adaptor.IndicesAdaptor
 import com.project.investgenius.adaptor.TopGainerAdaptor
 import com.project.investgenius.databinding.FragmentHomeBinding
 import com.project.investgenius.viewmodel.HomeViewModel
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class HomeFragment : Fragment() {
 
@@ -79,13 +81,42 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupIndices() {
-        val indicesName = listOf("NIFTY 50", "SENSEX", "BANK NIFTY")
-        val indicesValue = listOf(22795.90f, 75311.06f, 48981.20f)
-        val indicesAdaptor = IndicesAdaptor(indicesName, indicesValue)
-        binding.indicesRecyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.indicesRecyclerView.adapter = indicesAdaptor
+        // Create Retrofit instance for fetching indices
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://apitesting-production-07ba.up.railway.app/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(com.project.investgenius.API.ApiService::class.java)
+        apiService.getIndianIndices().enqueue(object : retrofit2.Callback<com.project.investgenius.API.IndianIndices> {
+            override fun onResponse(
+                call: retrofit2.Call<com.project.investgenius.API.IndianIndices>,
+                response: retrofit2.Response<com.project.investgenius.API.IndianIndices>
+            ) {
+                if (response.isSuccessful) {
+                    val indicesResponse = response.body()
+                    val indicesNameList = mutableListOf<String>()
+                    val indicesValueList = mutableListOf<Float>()
+
+                    indicesResponse?.indices?.forEach { (name, info) ->
+                        indicesNameList.add(name)
+                        indicesValueList.add(info.currentValue.toFloat())
+                    }
+                    val indicesAdaptor = IndicesAdaptor(indicesNameList, indicesValueList)
+                    binding.indicesRecyclerView.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    binding.indicesRecyclerView.adapter = indicesAdaptor
+                } else {
+                    Toast.makeText(requireContext(), "Failed to load indices", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<com.project.investgenius.API.IndianIndices>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

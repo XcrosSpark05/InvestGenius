@@ -1,34 +1,29 @@
 package com.project.investgenius.Fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.project.investgenius.R
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.project.investgenius.API.RetrofitClient
+import com.project.investgenius.API.ChatResponse
+import com.project.investgenius.API.StockInfoResponse
+import com.project.investgenius.API.WordInfoResponse
+import com.project.investgenius.API.NewsResponse
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AIFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AIFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var chatDisplay: TextView
+    private lateinit var messageInput: EditText
+    private lateinit var sendButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,23 +33,144 @@ class AIFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_a_i, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AIFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AIFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize UI elements
+        chatDisplay = view.findViewById(R.id.chatDisplay)
+        messageInput = view.findViewById(R.id.messageInput)
+        sendButton = view.findViewById(R.id.sendButton)
+
+        // Set up click listener for the send button
+        sendButton.setOnClickListener {
+            val userMessage = messageInput.text.toString().trim()
+            if (userMessage.isNotEmpty()) {
+                chatDisplay.append("\nYou: $userMessage\n")
+
+                // Route the input based on its content
+                handleUserMessage(userMessage)
+
+                // Append a separator after handling the message
+                chatDisplay.append("_________________________\n")
+
+                // Clear input field
+                messageInput.text.clear()
+            }
+        }
+    }
+
+    private fun handleUserMessage(message: String) {
+        val lowerMessage = message.lowercase()
+        when {
+            message.split(" ").size == 1 -> {
+                getStockInfo(message, "investor")
+            }
+            lowerMessage.startsWith("what is the meaning of") -> {
+                val tokens = message.split(" ", limit = 5)
+                if (tokens.size >= 5) {
+                    val word = tokens[4]
+                    getWordInfo(word)
+                } else {
+                    chatDisplay.append("\nBot: Please use the format: what is the meaning of <word>")
                 }
             }
+            lowerMessage.startsWith("tell me the news of") -> {
+                val topic = message.substringAfter("tell me the news of").trim()
+                if (topic.isNotEmpty()) {
+                    getNews(topic)
+                } else {
+                    chatDisplay.append("\nBot: Please use the format: tell me the news of <topic>")
+                }
+            }
+            else -> {
+                sendChatMessage(message)
+            }
+        }
+    }
+
+    private fun sendChatMessage(message: String) {
+        RetrofitClient.instance.sendMessage(message)
+            .enqueue(object : Callback<ChatResponse> {
+                override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
+                    if (response.isSuccessful) {
+                        val botResponse = response.body()?.response ?: "No response"
+                        chatDisplay.append("\nBot: $botResponse")
+                    } else {
+                        chatDisplay.append("\nBot: Error: ${response.errorBody()?.string()}")
+                    }
+                }
+                override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
+                    chatDisplay.append("\nBot: Request failed: ${t.message}")
+                }
+            })
+    }
+
+    private fun getStockInfo(symbol: String, goal: String) {
+        RetrofitClient.instance.getStockInfo(symbol, goal)
+            .enqueue(object : Callback<StockInfoResponse> {
+                override fun onResponse(call: Call<StockInfoResponse>, response: Response<StockInfoResponse>) {
+                    if (response.isSuccessful) {
+                        val stockInfo = response.body()
+                        val currentPrice = stockInfo?.stockDetails?.currentPrice ?: "N/A"
+                        val predictedPrice = stockInfo?.predictedPrice ?: "N/A"
+                        val advice = stockInfo?.advice ?: "No advice available"
+
+                        val infoMessage = """
+                            Bot: 
+                            Current Price: $currentPrice
+                            Predicted Price: $predictedPrice
+                            Advice: $advice
+                            _________________________
+                        """.trimIndent()
+
+                        chatDisplay.append("\n$infoMessage")
+                    } else {
+                        chatDisplay.append("\nBot: Error: ${response.errorBody()?.string()}")
+                    }
+                }
+                override fun onFailure(call: Call<StockInfoResponse>, t: Throwable) {
+                    chatDisplay.append("\nBot: Request failed: ${t.message}")
+                }
+            })
+    }
+
+    private fun getWordInfo(word: String) {
+        RetrofitClient.instance.getWordInfo(word)
+            .enqueue(object : Callback<WordInfoResponse> {
+                override fun onResponse(call: Call<WordInfoResponse>, response: Response<WordInfoResponse>) {
+                    if (response.isSuccessful) {
+                        val wordInfo = response.body()
+                        val meaning = wordInfo?.meaning ?: "No meaning found"
+                        val wikiSummary = wordInfo?.wikiSummary ?: "No Wikipedia info available"
+                        chatDisplay.append("\nBot: Meaning of \"$word\": $meaning\nWikipedia Info: $wikiSummary")
+                    } else {
+                        chatDisplay.append("\nBot: Error: ${response.errorBody()?.string()}")
+                    }
+                }
+                override fun onFailure(call: Call<WordInfoResponse>, t: Throwable) {
+                    chatDisplay.append("\nBot: Request failed: ${t.message}")
+                }
+            })
+    }
+
+    private fun getNews(topic: String) {
+        RetrofitClient.instance.getNews(topic)
+            .enqueue(object : Callback<NewsResponse> {
+                override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
+                    if (response.isSuccessful) {
+                        val newsResponse = response.body()
+                        val articles = newsResponse?.articles ?: listOf()
+                        val newsText = articles.joinToString(separator = "\n") { article ->
+                            article.title
+                        }
+                        chatDisplay.append("\nBot: News for \"$topic\":\n$newsText")
+                    } else {
+                        chatDisplay.append("\nBot: Error: ${response.errorBody()?.string()}")
+                    }
+                }
+                override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
+                    chatDisplay.append("\nBot: Request failed: ${t.message}")
+                }
+            })
     }
 }

@@ -1,14 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.AIFragment">
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Chat Display Area -->
     <TextView
+        android:id="@+id/chatDisplay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="AI PREDICTION" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Chat messages appear here"
+        android:background="#EEE"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:gravity="start|top"
+        android:minHeight="200dp" />
 
-</FrameLayout>
+    <!-- Input Field + Send Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <!-- Message Input (Now larger & aligned with chatDisplay) -->
+        <EditText
+            android:id="@+id/messageInput"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:hint="Enter your message"
+            android:background="@android:drawable/editbox_background"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp"
+            android:minHeight="50dp"/>
+
+        <!-- Send Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text=""
+            android:background="@android:drawable/ic_menu_send"
+            android:padding="12dp"/>
+    </LinearLayout>
+
+</LinearLayout>
