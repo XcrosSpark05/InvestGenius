@@ -5,6 +5,7 @@ package com.project.investgenius
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -20,6 +21,10 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.project.investgenius.databinding.ActivityLoginBinding
 import com.project.investgenius.databinding.ActivityStartBinding
 
@@ -120,15 +125,47 @@ class login_activity : AppCompatActivity() {
         }
     }
     private fun updateUI(account: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(account.idToken , null)
-        auth.signInWithCredential(credential).addOnCompleteListener{
-            if (it.isSuccessful){
-                val intent = Intent(this,allsetscreen::class.java)
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        auth.signInWithCredential(credential).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val firebaseUser = auth.currentUser
+                val userReference = FirebaseDatabase.getInstance().reference.child("user").child(firebaseUser!!.uid)
+
+                // Check if user data already exists
+                userReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            // If user does not exist, store Google Sign-In data in Firebase
+                            val userMap = hashMapOf(
+                                "firstname" to (account.givenName ?: ""),
+                                "lastname" to (account.familyName ?: ""),
+                                "email" to (account.email ?: ""),
+                                "number" to "" // Google doesn't provide phone number
+                            )
+
+                            userReference.setValue(userMap)
+                                .addOnSuccessListener {
+                                    Log.d("GoogleSignIn", "User data stored successfully")
+                                }
+                                .addOnFailureListener {
+                                    Log.e("GoogleSignIn", "Failed to store user data: ${it.message}")
+                                }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e("FirebaseError", "Database error: ${error.message}")
+                    }
+                })
+
+                // Redirect to the main screen
+                val intent = Intent(this, allsetscreen::class.java)
                 startActivity(intent)
-            }else{
+                finish()
+            } else {
                 Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
+
 }

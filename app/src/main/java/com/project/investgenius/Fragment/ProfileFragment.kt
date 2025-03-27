@@ -1,14 +1,17 @@
 package com.project.investgenius.Fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.project.investgenius.login_activity
 import com.project.investgenius.databinding.FragmentProfileBinding
 import com.project.investgenius.model.UserModel
 
@@ -61,6 +64,32 @@ class ProfileFragment : Fragment() {
 
         // Fetch user data from Firebase
         retrieveUserData()
+
+        // Logout functionality with confirmation dialog
+        binding.textView28.setOnClickListener {
+            showLogoutDialog()
+        }
+    }
+
+    private fun showLogoutDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Logout")
+        builder.setMessage("Are you sure you want to logout?")
+        builder.setPositiveButton("Yes") { _, _ ->
+            logoutUser()
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private fun logoutUser() {
+        auth.signOut()
+        Toast.makeText(requireContext(), "Logged Out Successfully!", Toast.LENGTH_SHORT).show()
+        val intent = Intent(requireContext(), login_activity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     private fun updateUserData() {
@@ -85,8 +114,6 @@ class ProfileFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failure 😒", Toast.LENGTH_SHORT).show()
             }
     }
-
-
 
     private fun retrieveUserData() {
         val currentUserUid = auth.currentUser?.uid
@@ -122,5 +149,4 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null // Prevent memory leaks
     }
-
 }
