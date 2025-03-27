@@ -86,9 +86,15 @@ class signup : AppCompatActivity() {
         val password = binding.passregnametext.text.toString().trim()
         val confrimPassword = binding.confrimpasswordregnametext.text.toString().trim()
 
-        val user = UserModel(email, firstName, lastName, phoneNumber, password, confrimPassword)
+        val user = UserModel(
+            email = email,
+            firstname = firstName,
+            lastname = lastName,
+            number = phoneNumber,
+            pass = password,
+            confpass = confrimPassword
+        )
 
-        // Get the current user ID safely
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         if (firebaseUser != null) {
             val userId = firebaseUser.uid
@@ -103,6 +109,7 @@ class signup : AppCompatActivity() {
             Toast.makeText(this, "User is not logged in", Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
 

@@ -5,10 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.project.investgenius.databinding.FragmentProfileBinding
+import com.project.investgenius.model.UserModel
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -53,9 +55,38 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.button11.setOnClickListener {
+            updateUserData()
+        }
+
         // Fetch user data from Firebase
         retrieveUserData()
     }
+
+    private fun updateUserData() {
+        val updatefirstName = binding.editTextText2.text.toString()
+        val updatelastname = binding.editTextText3.text.toString()
+        val updatenumber = binding.editTextText10.text.toString()
+        val updateemail = binding.editTextTextEmailAddress.text.toString()
+
+        val updates = mapOf(
+            "firstname" to updatefirstName,
+            "lastname" to updatelastname,
+            "number" to updatenumber,
+            "email" to updateemail
+        )
+
+        userReference.child(auth.currentUser!!.uid).updateChildren(updates)
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Profile Updated 😊", Toast.LENGTH_SHORT).show()
+                auth.currentUser?.updateEmail(updateemail)
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Failure 😒", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
 
     private fun retrieveUserData() {
         val currentUserUid = auth.currentUser?.uid
@@ -74,7 +105,7 @@ class ProfileFragment : Fragment() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Handle error properly
+                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             })
         }
@@ -91,4 +122,5 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null // Prevent memory leaks
     }
+
 }
