@@ -60,7 +60,7 @@ class login_activity : AppCompatActivity() {
                     .addOnCompleteListener { task->
                         if (task.isSuccessful){
                             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this,otp::class.java)
+                            val intent = Intent(this,allsetscreen::class.java)
                             startActivity(intent)
                             finish()
                         }
@@ -71,8 +71,6 @@ class login_activity : AppCompatActivity() {
                     }
             }
         }
-
-
 
 
         binding.textView9.setOnClickListener{
@@ -111,7 +109,16 @@ class login_activity : AppCompatActivity() {
             Toast.makeText(this, "Failed!!", Toast.LENGTH_SHORT).show()
         }
     }
+    //check if the user is already Logged  in
 
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        if(currentUser!=null){
+            val intent = Intent(this,MainActivity::class.java)
+            startActivity(intent)
+        }
+    }
     private fun updateUI(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(account.idToken , null)
         auth.signInWithCredential(credential).addOnCompleteListener{
