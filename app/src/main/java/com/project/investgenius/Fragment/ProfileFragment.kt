@@ -11,9 +11,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.project.investgenius.ChangePassword
 import com.project.investgenius.login_activity
 import com.project.investgenius.databinding.FragmentProfileBinding
-import com.project.investgenius.model.UserModel
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -68,6 +68,12 @@ class ProfileFragment : Fragment() {
         // Logout functionality with confirmation dialog
         binding.textView28.setOnClickListener {
             showLogoutDialog()
+        }
+
+        // Change Password Button
+        binding.button10.setOnClickListener {
+            val intent = Intent(requireContext(), ChangePassword::class.java)
+            startActivity(intent)
         }
     }
 

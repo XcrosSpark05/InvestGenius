@@ -15,6 +15,9 @@
         android:theme="@style/Theme.InvestGenius"
         tools:targetApi="31">
         <activity
+            android:name=".ChangePassword"
+            android:exported="false" />
+        <activity
             android:name=".creatationsplashscreen"
             android:exported="false" />
         <activity
@@ -22,7 +25,7 @@
             android:exported="false" />
         <activity
             android:name=".otp"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".signup"
             android:exported="false" />
@@ -47,7 +50,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan" />
 
         <meta-data
             android:name="preloaded_fonts"

@@ -74,5 +74,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     implementation ("com.github.KwabenBerko:News-API-Java:1.0.2")
     implementation ("com.google.android.material:material:1.8.0")
+    implementation ("com.google.firebase:firebase-auth:21.0.1")
+
 
 }
